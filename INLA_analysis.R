@@ -261,56 +261,56 @@ summary(model_inla_london_w_weekend_interac_some)
 
 
 
-# aggregate weekdays and weekeds separately
-shape_london <- maptools::readShapePoly("London-wards-2018/London-wards-2018_ESRI/London_Ward.shp")
-plot(shape_london, border = "blue", axes = TRUE, las = 1)
-
-london_grouped <- london_grouped %>% arrange(factor(GSS_CODE.x, levels = shape_london[shape_london$GSS_CODE %in% london_grouped$GSS_CODE.x, ]$GSS_CODE))
-london_grouped$id <- 1:nrow(london_grouped)
-
-# spatial model
-shape_nb_london <- spdep::poly2nb(shape_london[shape_london$GSS_CODE %in% london_grouped$GSS_CODE.x, ])
-
-nb2INLA("shape_inla_london.graph", shape_nb_london)
-shape_adj_london <- paste(getwd(), "/shape_inla_london.graph", sep = "")
-
-H <- inla.read.graph(filename = "shape_inla_london.graph")
-image(inla.graph2matrix(H), xlab = "", ylab = "")
-
-
-# very simple approach several covariates
-formula_inla_london <- mean_log_realSum ~ 1 +
-  #quant_room_type_entireHomeApt_weekdays +
-  #quant_room_type_entireHomeApt_weekends +
-  quant_room_type_privateRoom_weekdays +
-  quant_room_type_privateRoom_weekends +
-  #quant_room_type_sharedRoom_weekdays +
-  #quant_room_type_sharedRoom_weekends +
-  # mean_room_shared +
-  # # mean_room_private +
-  #mean_person_capacity_weekdays +
-  #mean_person_capacity_weekends +
-  #mean_multi_weekdays +
-  #mean_multi_weekends +
-  #mean_biz_weekdays +
-  #mean_biz_weekends +
-  #mean_dist_weekdays +
-  #mean_dist_weekends +
-  #mean_metro_dist_weekdays +
-  #mean_metro_dist_weekends +
-  #mean_host_is_superhost_weekdays +
-  #mean_host_is_superhost_weekends +
-  #mean_cleanliness_rating_weekdays +
-  #mean_cleanliness_rating_weekends +
-  #mean_guest_satisfaction_overall_weekdays +
-  #mean_guest_satisfaction_overall_weekends +
-  #mean_attr_index_weekdays +
-  #mean_attr_index_weekends +
-  f(id, model = "besag", graph = shape_adj_london)
-model_inla_london <- inla(formula_inla_london, family = "gaussian", data = london_grouped)
-
-summary(model_inla_london)
-
+# # aggregate weekdays and weekeds separately
+# shape_london <- maptools::readShapePoly("London-wards-2018/London-wards-2018_ESRI/London_Ward.shp")
+# plot(shape_london, border = "blue", axes = TRUE, las = 1)
+# 
+# london_grouped <- london_grouped %>% arrange(factor(GSS_CODE.x, levels = shape_london[shape_london$GSS_CODE %in% london_grouped$GSS_CODE.x, ]$GSS_CODE))
+# london_grouped$id <- 1:nrow(london_grouped)
+# 
+# # spatial model
+# shape_nb_london <- spdep::poly2nb(shape_london[shape_london$GSS_CODE %in% london_grouped$GSS_CODE.x, ])
+# 
+# nb2INLA("shape_inla_london.graph", shape_nb_london)
+# shape_adj_london <- paste(getwd(), "/shape_inla_london.graph", sep = "")
+# 
+# H <- inla.read.graph(filename = "shape_inla_london.graph")
+# image(inla.graph2matrix(H), xlab = "", ylab = "")
+# 
+# 
+# # very simple approach several covariates
+# formula_inla_london <- mean_log_realSum ~ 1 +
+#   #quant_room_type_entireHomeApt_weekdays +
+#   #quant_room_type_entireHomeApt_weekends +
+#   quant_room_type_privateRoom_weekdays +
+#   quant_room_type_privateRoom_weekends +
+#   #quant_room_type_sharedRoom_weekdays +
+#   #quant_room_type_sharedRoom_weekends +
+#   # mean_room_shared +
+#   # # mean_room_private +
+#   #mean_person_capacity_weekdays +
+#   #mean_person_capacity_weekends +
+#   #mean_multi_weekdays +
+#   #mean_multi_weekends +
+#   #mean_biz_weekdays +
+#   #mean_biz_weekends +
+#   #mean_dist_weekdays +
+#   #mean_dist_weekends +
+#   #mean_metro_dist_weekdays +
+#   #mean_metro_dist_weekends +
+#   #mean_host_is_superhost_weekdays +
+#   #mean_host_is_superhost_weekends +
+#   #mean_cleanliness_rating_weekdays +
+#   #mean_cleanliness_rating_weekends +
+#   #mean_guest_satisfaction_overall_weekdays +
+#   #mean_guest_satisfaction_overall_weekends +
+#   #mean_attr_index_weekdays +
+#   #mean_attr_index_weekends +
+#   f(id, model = "besag", graph = shape_adj_london)
+# model_inla_london <- inla(formula_inla_london, family = "gaussian", data = london_grouped)
+# 
+# summary(model_inla_london)
+# 
 
 
 
