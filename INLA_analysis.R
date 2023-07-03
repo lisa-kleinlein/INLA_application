@@ -343,13 +343,15 @@ data_for_viz$geometry_polygon <- shape_london_w_polygon_available$geometry
 ggplot(data = data_for_viz) +
   geom_sf(aes(geometry = geometry_polygon)) +
   geom_sf(aes(geometry = geometry), size = 0.7, shape = 1, col = "blue") +
-  labs(title = "Central wards of london", x = "longitudinal", y = "latitudinal") +
+  labs(title = "Central wards of london", x = "longitudinal", y = "latitudinal",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
   theme_bw()
 
 # wards with number of observations
 ggplot(data = data_for_viz) +
   geom_sf(aes(geometry = geometry_polygon, fill = n)) +
-  labs(title = "Number of observations per ward", x = "longitudinal", y = "latitudinal") +
+  labs(title = "Number of observations per ward", x = "longitudinal", y = "latitudinal",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
   scale_fill_continuous(name = "number of\nobservations") +
   theme_bw()
 
@@ -357,7 +359,8 @@ ggplot(data = data_for_viz) +
 data_for_viz$estimated_random_effect <- model_inla_london_wo_weekend_interac_dic$summary.random$id$mean
 ggplot(data = data_for_viz) +
   geom_sf(aes(geometry = geometry_polygon, fill = estimated_random_effect)) +
-  labs(title = "Estimated random spatial effects (mean) per ward", x = "longitudinal", y = "latitudinal") +
+  labs(title = "Estimated random spatial effects (mean) per ward", x = "longitudinal", y = "latitudinal",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
   scale_fill_viridis(name = "estimated\nrandom\neffect", limits = c(-1.3, 1.3)) +
   theme_bw()
 
@@ -372,7 +375,8 @@ p1 <- ggplot(data = data_for_viz) +
 data_for_viz$estimated_random_effect_0.025 <- model_inla_london_wo_weekend_interac_dic$summary.random$id$`0.025quant`
 ggplot(data = data_for_viz) +
   geom_sf(aes(geometry = geometry_polygon, fill = estimated_random_effect_0.025)) +
-  labs(title = "0.025 quantile of estimated random spatial effects per ward", x = "longitudinal", y = "latitudinal") +
+  labs(title = "0.025 quantile of estimated random spatial effects per ward", x = "longitudinal", y = "latitudinal",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
   scale_fill_viridis(name = "0.025 quantile", limits = c(-1.3, 1.3)) +
   theme_bw()
 
@@ -387,7 +391,8 @@ p2 <- ggplot(data = data_for_viz) +
 data_for_viz$estimated_random_effect_0.975 <- model_inla_london_wo_weekend_interac_dic$summary.random$id$`0.975quant`
 ggplot(data = data_for_viz) +
   geom_sf(aes(geometry = geometry_polygon, fill = estimated_random_effect_0.975)) +
-  labs(title = "0.975 quantile of estimated random spatial effects per ward", x = "longitudinal", y = "latitudinal") +
+  labs(title = "0.975 quantile of estimated random spatial effects per ward", x = "longitudinal", y = "latitudinal",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
   scale_fill_viridis(name = "0.975 quantile", limits = c(-1.3, 1.3)) +
   theme_bw()
 
@@ -406,3 +411,4 @@ annotate_figure(plots_random_effects,
                 left = text_grob("latitudinal", rot = 90),
                 bottom = text_grob("longitudinal")
 )
+# noch caption = "Contains National Statistics data © Crown copyright and database right [2015]" hinzufügen
