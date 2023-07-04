@@ -9,6 +9,8 @@ london_weekdays$room_type_sharedRoom <- as.numeric(london_weekdays$room_type == 
 london_weekdays$room_shared <- as.numeric(as.logical(london_weekdays$room_shared))
 london_weekdays$room_private <- as.numeric(as.logical(london_weekdays$room_private))
 london_weekdays$host_is_superhost <- as.numeric(as.logical(london_weekdays$host_is_superhost))
+london_weekdays$guest_satisfaction_overall_10 <- london_weekdays$guest_satisfaction_overall / 10
+london_weekdays$attr_index_norm_10 <- london_weekdays$attr_index_norm / 10 
 london_weekdays$offers <- as.character(NA)
 for(i in 1:nrow(london_weekdays)) {
   if (london_weekdays[i, ]$multi == 0 & london_weekdays[i, ]$biz == 0) {
@@ -20,6 +22,8 @@ for(i in 1:nrow(london_weekdays)) {
   }
 }
 london_weekdays$offers <- as.factor(london_weekdays$offers)
+
+
 
 london_weekends <- read.csv("archive/london_weekends.csv")
 london_weekends$log_realSum <- log(london_weekends$realSum)

@@ -28,10 +28,10 @@ nb2INLA("shape_inla_london.graph", shape_nb_london)
 shape_adj_london <- paste(getwd(), "/shape_inla_london.graph", sep = "")
 
 H <- inla.read.graph(filename = "shape_inla_london.graph")
-image(inla.graph2matrix(H), xlab = "", ylab = "")
+image(inla.graph2matrix(H), xlab = "ward ID", ylab = "ward ID", main = "Adjacency matrix for wards of London")
 
 
-# approach with all covariates (just weekdays)
+# INLA with all covariates (just weekdays)
 formula_weekdays_all <- mean_log_realSum ~ 1 +
   mean_room_shared +
   mean_room_private +
@@ -43,8 +43,8 @@ formula_weekdays_all <- mean_log_realSum ~ 1 +
   quant_offers_2_4 +
   quant_offers_more_than_4 +
   mean_cleanliness_rating +
-  mean_guest_satisfaction_overall +
-  mean_attr_index +
+  mean_guest_satisfaction_overall_10 +
+  mean_attr_index_norm_10 +
   f(id, model = "besag", graph = shape_adj_london)
 model_weekdays_all <- inla(formula_weekdays_all,
                            family = "gaussian", data = london_weekdays_grouped,
@@ -57,6 +57,11 @@ effects_weekdays_all$predictor <- rownames(effects_weekdays_all)
 forest_data_weekdays_all <- data.frame("predictor" = rep(effects_weekdays_all$predictor, times = 3),
                                        "effects" = c(effects_weekdays_all$mean, effects_weekdays_all$`0.025quant`, effects_weekdays_all$`0.975quant`))
 round(model_weekdays_all$summary.random$id, 3)
+all(round(model_weekdays_all$summary.random$id, 3)$`0.095quant` > 0)
+all(round(model_weekdays_all$summary.random$id, 3)$`0.025quant` < 0)
+length(which(round(model_weekdays_all$summary.random$id, 3)$`0.025quant` >= 0))
+# only 7 wards for which the estimated spatial random effect is significant positive (for alpha = 0.05)
+# the estimated spatial random effect for all other wards is not significant
 
 ggplot(forest_data_weekdays_all[forest_data_weekdays_all$predictor != "(Intercept)", ]) +
   geom_point(aes(x = effects,
@@ -64,11 +69,179 @@ ggplot(forest_data_weekdays_all[forest_data_weekdays_all$predictor != "(Intercep
                             levels = c("mean_room_shared", "mean_room_private", "mean_person_capacity",
                                        "mean_bedrooms", "mean_dist", "mean_metro_dist",
                                        "mean_host_is_superhost", "quant_offers_2_4", "quant_offers_more_than_4",
-                                       "mean_cleanliness_rating", "mean_guest_satisfaction_overall", "mean_attr_index")))) +
+                                       "mean_cleanliness_rating", "mean_guest_satisfaction_overall_10", "mean_attr_index_norm_10")))) +
   geom_line(aes(x = effects,
                 y = predictor)) +
   geom_vline(aes(xintercept = 0)) +
-  labs(title = "Only weekdays, all covariates", y = "predictors") +
+  labs(title = "Fixed effects with 95% confidence interval", y = "predictors") +
   theme_bw() +
-  xlim(-1.5, 1.5) +
+  xlim(-1.1, 1.1) +
+  scale_y_discrete(limits = rev) +
+  theme(plot.title = element_text(size = 12))
+
+
+# INLA with some covariates better DIC (just weekdays)
+formula_weekdays_DIC <- mean_log_realSum ~ 1 +
+  mean_room_shared +
+  # mean_room_private +
+  mean_person_capacity +
+  mean_bedrooms +
+  # mean_dist +
+  # mean_metro_dist +
+  mean_host_is_superhost +
+  quant_offers_2_4 +
+  # quant_offers_more_than_4 +
+  mean_cleanliness_rating +
+  mean_guest_satisfaction_overall_10 +
+  # mean_attr_index_norm_10 +
+  f(id, model = "besag", graph = shape_adj_london)
+model_weekdays_DIC <- inla(formula_weekdays_DIC,
+                           family = "gaussian", data = london_weekdays_grouped,
+                           control.compute = list(dic = TRUE))
+
+summary(model_weekdays_DIC)
+
+effects_weekdays_DIC <- round(model_weekdays_DIC$summary.fixed, 3)
+effects_weekdays_DIC$predictor <- rownames(effects_weekdays_DIC)
+forest_data_weekdays_DIC <- data.frame("predictor" = rep(effects_weekdays_DIC$predictor, times = 3),
+                                       "effects" = c(effects_weekdays_DIC$mean, effects_weekdays_DIC$`0.025quant`, effects_weekdays_DIC$`0.975quant`))
+round(model_weekdays_all$summary.random$id, 3)
+
+ggplot(forest_data_weekdays_DIC[forest_data_weekdays_DIC$predictor != "(Intercept)", ]) +
+  geom_point(aes(x = effects,
+                 y = factor(predictor,
+                            levels = c("mean_room_shared", "mean_room_private", "mean_person_capacity",
+                                       "mean_bedrooms", "mean_dist", "mean_metro_dist",
+                                       "mean_host_is_superhost", "quant_offers_2_4", "quant_offers_more_than_4",
+                                       "mean_cleanliness_rating", "mean_guest_satisfaction_overall_10", "mean_attr_index_10")))) +
+  geom_line(aes(x = effects,
+                y = predictor)) +
+  geom_vline(aes(xintercept = 0)) +
+  labs(title = "Only weekdays, some covariates with better DIC", y = "predictors") +
+  theme_bw() +
+  #xlim(-1.5, 1.5) +
   scale_y_discrete(limits=rev)
+
+
+
+
+
+
+# Visualization
+shape_london_w_polygon <- st_read("London-wards-2018/London-wards-2018_ESRI/London_Ward.shp")
+shape_london_weekdays_w_polygon_available <- shape_london_w_polygon[shape_london_w_polygon$GSS_CODE %in% london_weekdays_grouped$GSS_CODE, ]
+data_for_viz <- london_weekdays_grouped
+data_for_viz$geometry_polygon <- shape_london_weekdays_w_polygon_available$geometry 
+
+# wards with single observations
+ggplot(data = data_for_viz) +
+  geom_sf(aes(geometry = geometry_polygon)) +
+  geom_sf(aes(geometry = geometry), size = 0.7, shape = 1, col = "blue") +
+  labs(title = "Central wards of London",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())
+
+# wards with number of observations
+ggplot(data = data_for_viz) +
+  geom_sf(aes(geometry = geometry_polygon, fill = n)) +
+  labs(title = "Number of observations per ward",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
+  scale_fill_continuous(name = "number of\nobservations") +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())
+
+# wards with estimated random spatial effect (mean)
+data_for_viz$estimated_random_effect <- model_weekdays_all$summary.random$id$mean
+ggplot(data = data_for_viz) +
+  geom_sf(aes(geometry = geometry_polygon, fill = estimated_random_effect)) +
+  labs(title = "Estimated random spatial effects (mean) per ward",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
+  scale_fill_viridis(name = "estimated\nrandom\neffect", limits = c(-0.35, 0.35)) +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())
+
+p1 <- ggplot(data = data_for_viz) +
+  geom_sf(aes(geometry = geometry_polygon, fill = estimated_random_effect)) +
+  labs(title = "mean") +
+  scale_fill_viridis(name = "", limits = c(-0.35, 0.35)) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 10)) +
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())
+
+# wards with 0.025 quantile of estimated random spatial effect
+data_for_viz$estimated_random_effect_0.025 <- model_weekdays_all$summary.random$id$`0.025quant`
+ggplot(data = data_for_viz) +
+  geom_sf(aes(geometry = geometry_polygon, fill = estimated_random_effect_0.025)) +
+  labs(title = "0.025 quantile of estimated random spatial effects per ward",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
+  scale_fill_viridis(name = "0.025 quantile", limits = c(-0.35, 0.35)) +
+  theme_bw()  +
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())
+
+p2 <- ggplot(data = data_for_viz) +
+  geom_sf(aes(geometry = geometry_polygon, fill = estimated_random_effect_0.025)) +
+  labs(title = "0.025 quantile") +
+  scale_fill_viridis(name = "", limits = c(-0.35, 0.35)) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 10))  +
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())
+
+# wards with 0.975 quantile of estimated random spatial effect
+data_for_viz$estimated_random_effect_0.975 <- model_weekdays_all$summary.random$id$`0.975quant`
+ggplot(data = data_for_viz) +
+  geom_sf(aes(geometry = geometry_polygon, fill = estimated_random_effect_0.975)) +
+  labs(title = "0.975 quantile of estimated random spatial effects per ward",
+       caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
+  scale_fill_viridis(name = "0.975 quantile", limits = c(-0.35, 0.35)) +
+  theme_bw()  +
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())
+
+p3 <- ggplot(data = data_for_viz) +
+  geom_sf(aes(geometry = geometry_polygon, fill = estimated_random_effect_0.975)) +
+  labs(title = "0.975 quantile") +
+  scale_fill_viridis(name = "", limits = c(-0.35, 0.35)) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 10)) +
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank())
+
+
+plots_random_effects <- ggarrange(p1, NULL, p2, p3, common.legend = TRUE, legend = "right")
+plots_random_effects
+annotate_figure(plots_random_effects,
+                top = text_grob("Spatial random effects", size = 12),
+                bottom = text_grob("Contains National Statistics data © Crown copyright and database right [2015]", size = 10, hjust = 0.4, vjust = 0.3)
+)
+

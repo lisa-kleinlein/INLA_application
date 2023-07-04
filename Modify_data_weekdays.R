@@ -42,11 +42,13 @@ london_weekdays_grouped <- joined_data_london_weekdays %>%
             quant_offers_more_than_4 = sum(offers == "more than 4 offers") / n,
             mean_cleanliness_rating = mean(cleanliness_rating),
             mean_guest_satisfaction_overall = mean(guest_satisfaction_overall),
+            mean_guest_satisfaction_overall_10 = mean(guest_satisfaction_overall_10),
             mean_bedrooms = mean(bedrooms),
             mean_dist = mean(dist),
             mean_metro_dist = mean(metro_dist),
             mean_attr_index = mean(attr_index),
             mean_attr_index_norm = mean(attr_index_norm),
+            mean_attr_index_norm_10 = mean(attr_index_norm_10),
             mean_rest_index = mean(rest_index),
             mean_rest_index_norm = mean(rest_index_norm),
             DISTRICT = getmode(DISTRICT),
@@ -66,18 +68,21 @@ cor(as.data.frame(london_weekdays_grouped)[, c("quant_room_type_entireHomeApt",
                                       "quant_offers_more_than_4",
                                       "mean_cleanliness_rating",
                                       "mean_guest_satisfaction_overall",
+                                      "mean_guest_satisfaction_overall_10",
                                       "mean_bedrooms",
                                       "mean_dist",
                                       "mean_metro_dist",
                                       "mean_attr_index",
                                       "mean_attr_index_norm",
+                                      "mean_attr_index_norm_10",
                                       "mean_rest_index",
                                       "mean_rest_index_norm")])
 # highly correlated pairs of variables:
 # -"quant_room_type_entireHomeApt" and "quant_room_type_privateRoom"
 # -"quant_room_type_privateRoom" and "mean_room_private"
 # -"quant_room_type_sharedRoom" and "mean_room_shared"
-# -"mean_attr_index" and "mean_attr_index_norm"
+# -"mean_guest_satisfaction_overall" and "mean_guest_satisfaction_overall_10"
+# -"mean_attr_index" and "mean_attr_index_norm" and "mean_attr_index_norm_10" 
 # -"mean_rest_index" and "mean_rest_index_norm"
 # -"mean_attr_index" and "mean_rest_index"
 # -> exclude "quant_room_type_entireHomeApt", "quant_room_type_privateRoom", "quant_room_type_sharedRoom",
@@ -90,9 +95,9 @@ cor(as.data.frame(london_weekdays_grouped)[, c("mean_room_shared",
                                                "quant_offers_2_4",
                                                "quant_offers_more_than_4",
                                                "mean_cleanliness_rating",
-                                               "mean_guest_satisfaction_overall",
+                                               "mean_guest_satisfaction_overall_10",
                                                "mean_bedrooms",
                                                "mean_dist",
                                                "mean_metro_dist",
-                                               "mean_attr_index")])
+                                               "mean_attr_index_norm_10")])
 # no very high correlations (>0.85) anymore
