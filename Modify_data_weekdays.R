@@ -30,7 +30,7 @@ london_weekdays_grouped <- joined_data_london_weekdays %>%
   group_by(GSS_CODE) %>%
   summarise(n = n(),
             mean_realSum = mean(realSum),
-            mean_log_realSum = mean(log_realSum),
+            mean_log_realSum = log(mean_realSum),
             quant_room_type_entireHomeApt = sum(room_type_entireHomeApt) / n,
             quant_room_type_privateRoom = sum(room_type_privateRoom) / n,
             quant_room_type_sharedRoom = sum(room_type_sharedRoom) / n,
