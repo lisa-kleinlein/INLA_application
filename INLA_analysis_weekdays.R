@@ -7,16 +7,22 @@ library(dplyr)
 library(maptools)
 library(ggpubr)
 library(viridis)
+library(tikzDevice)
 
 ## LONDON
 ggplot(london_weekdays_grouped, aes(x = mean_realSum)) +
   geom_density() +
-  labs(x = "price (mean per ward)") +
-  theme_bw()
+  labs(x = "mean price") +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15))
+
 ggplot(london_weekdays_grouped, aes(x = mean_log_realSum)) +
   geom_density() +
-  labs(x = "log price (mean per ward)") +
-  theme_bw()
+  labs(x = "log mean price") +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15))
 
 
 shape_london <- maptools::readShapePoly("London-wards-2018/London-wards-2018_ESRI/London_Ward.shp")
@@ -63,7 +69,6 @@ forest_data_weekdays_all <- data.frame("predictor" = rep(effects_weekdays_all$pr
 round(model_weekdays_all$summary.random$id, 3)
 all(round(model_weekdays_all$summary.random$id, 3)$`0.975quant` > 0)
 all(round(model_weekdays_all$summary.random$id, 3)$`0.025quant` < 0)
-length(which(round(model_weekdays_all$summary.random$id, 3)$`0.025quant` > 0))
 # the estimated spatial random effect for all wards is not significant
 
 ggplot(forest_data_weekdays_all[forest_data_weekdays_all$predictor != "(Intercept)", ]) +
@@ -78,7 +83,13 @@ ggplot(forest_data_weekdays_all[forest_data_weekdays_all$predictor != "(Intercep
   geom_vline(aes(xintercept = 0)) +
   labs(title = "Fixed effects with 95% confidence interval", y = "predictors") +
   theme_bw() +
-  scale_y_discrete(limits = rev) +
+  scale_y_discrete(limits = rev,
+                   labels = c("mean_room_shared" = "room shared", "mean_room_private" = "room private",
+                              "mean_person_capacity" = "person capacity", "mean_bedrooms" = "number of bedrooms",
+                              "mean_dist" = "distance from city center", "mean_metro_dist" = "distance from metro",
+                              "mean_host_is_superhost" = "superhost status", "quant_offers_2_4" = "2-4 offers",
+                              "quant_offers_more_than_4" = "more than 4 offers", "mean_cleanliness_rating" = "cleanliness rating",
+                              "mean_guest_satisfaction_overall_10" = "guest satisfication rating", "mean_attr_index_norm_10" = "location attraction index")) +
   theme(plot.title = element_text(size = 12))
 
 
@@ -130,7 +141,12 @@ ggplot(forest_data_weekdays_all_wo_attr_dist[forest_data_weekdays_all_wo_attr_di
   geom_vline(aes(xintercept = 0)) +
   labs(title = "Fixed effects with 95% confidence interval", y = "predictors") +
   theme_bw() +
-  scale_y_discrete(limits = rev) +
+  scale_y_discrete(limits = rev,
+                   labels = c("mean_room_shared" = "room shared", "mean_room_private" = "room private",
+                              "mean_person_capacity" = "person capacity", "mean_bedrooms" = "number of bedrooms",
+                              "mean_metro_dist" = "distance from metro", "mean_host_is_superhost" = "superhost status",
+                              "quant_offers_2_4" = "2-4 offers", "quant_offers_more_than_4" = "more than 4 offers",
+                              "mean_cleanliness_rating" = "cleanliness rating", "mean_guest_satisfaction_overall_10" = "guest satisfication rating")) +
   theme(plot.title = element_text(size = 12))
 
 
@@ -193,7 +209,7 @@ data_for_viz$geometry_polygon <- shape_london_weekdays_w_polygon_available$geome
 # wards with single observations
 ggplot(data = data_for_viz) +
   geom_sf(aes(geometry = geometry_polygon)) +
-  geom_sf(aes(geometry = geometry), size = 0.7, shape = 1, col = "blue") +
+  #geom_sf(aes(geometry = geometry), size = 0.7, shape = 1, col = "blue") +
   labs(title = "Central wards of London",
        caption = "Contains National Statistics data © Crown copyright and database right [2015]") +
   theme_bw() +
@@ -214,7 +230,8 @@ ggplot(data = data_for_viz) +
         axis.title = element_blank(),
         axis.text = element_blank(),
         axis.ticks.x = element_blank(),
-        axis.ticks.y = element_blank())
+        axis.ticks.y = element_blank(),
+        plot.caption = element_text(hjust = 0))
 
 # wards with estimated random spatial effect (mean)
 data_for_viz$estimated_random_effect <- model_weekdays_all$summary.random$id$mean
@@ -398,5 +415,6 @@ plots_random_effects <- ggarrange(p1, NULL, p2, p3, common.legend = TRUE, legend
 plots_random_effects
 annotate_figure(plots_random_effects,
                 top = text_grob("Spatial random effects", size = 12),
-                bottom = text_grob("Contains National Statistics data © Crown copyright and database right [2015]", size = 10, hjust = 0.4, vjust = 0.3)
+                bottom = text_grob("Contains National Statistics data © Crown copyright and database right [2015]", size = 10, hjust = 0.45, vjust = 0.3)
 )
+

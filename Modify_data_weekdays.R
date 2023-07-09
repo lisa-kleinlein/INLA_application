@@ -16,11 +16,11 @@ getmode <- function(v) {
 shape_london <- st_read("London-wards-2018/London-wards-2018_ESRI/London_Ward.shp")
 sf_london_weekdays <- st_as_sf(london_weekdays, coords = c("lng", "lat"), crs = 4326)
 
-# Check the CRS of districts and sf_data
+# Check the CRS of shape_london and sf_london_weekdays
 print(st_crs(shape_london))
 print(st_crs(sf_london_weekdays))
 
-# Align the CRS of districts and sf_data
+# Align the CRS of districts and sf_london_weekdays
 sf_london_weekdays <- st_transform(sf_london_weekdays, crs = st_crs(shape_london))
 
 # Perform the spatial join
@@ -86,7 +86,7 @@ cor(as.data.frame(london_weekdays_grouped)[, c("quant_room_type_entireHomeApt",
 # -"mean_rest_index" and "mean_rest_index_norm"
 # -"mean_attr_index" and "mean_rest_index"
 # -> exclude "quant_room_type_entireHomeApt", "quant_room_type_privateRoom", "quant_room_type_sharedRoom",
-# "mean_attr_index_norm", "mean_rest_index_norm", "mean_rest_index" from model
+# "mean_guest_satisfaction_overall", "mean_attr_index_norm", "mean_rest_index_norm", "mean_rest_index" from model
 
 cor(as.data.frame(london_weekdays_grouped)[, c("mean_room_shared",
                                                "mean_room_private",
@@ -101,3 +101,4 @@ cor(as.data.frame(london_weekdays_grouped)[, c("mean_room_shared",
                                                "mean_metro_dist",
                                                "mean_attr_index_norm_10")])
 # no very high correlations (>0.85) anymore
+
