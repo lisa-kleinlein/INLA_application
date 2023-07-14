@@ -23,16 +23,3 @@ for(i in 1:nrow(london_weekdays)) {
 london_weekdays$offers <- as.factor(london_weekdays$offers)
 
 
-
-london_weekends <- read.csv("archive/london_weekends.csv")
-london_weekends$log_realSum <- log(london_weekends$realSum)
-london_weekends$weekend_listing <- 1
-london_weekends$room_type_entireHomeApt <- as.numeric(london_weekends$room_type == "Entire home/apt")
-london_weekends$room_type_privateRoom <- as.numeric(london_weekends$room_type == "Private room")
-london_weekends$room_type_sharedRoom <- as.numeric(london_weekends$room_type == "Shared room")
-london_weekends$room_shared <- as.numeric(as.logical(london_weekends$room_shared))
-london_weekends$room_private <- as.numeric(as.logical(london_weekends$room_private))
-london_weekends$host_is_superhost <- as.numeric(as.logical(london_weekends$host_is_superhost))
-
-london <- rbind(london_weekdays, london_weekends)
-
