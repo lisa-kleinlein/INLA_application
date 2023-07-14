@@ -28,7 +28,7 @@ ggplot(london_weekdays_grouped, aes(x = mean_log_realSum)) +
 test_data <- london_weekdays_grouped %>%
   as.data.frame() %>%
   group_by(mean_room_shared_10, mean_room_private_10, mean_person_capacity,
-           mean_host_is_superhost, quant_offers_2_4, quant_offers_more_than_4,
+           mean_host_is_superhost, quant_offers_2_4_10, quant_offers_more_than_4_10,
            mean_cleanliness_rating, mean_guest_satisfaction_overall_10, mean_bedrooms,
            mean_dist, mean_metro_dist, mean_attr_index_norm_10)
 shapiro.test(test_data$mean_log_realSum)
@@ -60,8 +60,8 @@ formula_weekdays_all <- mean_log_realSum ~ 1 +
   mean_dist +
   mean_metro_dist +
   mean_host_is_superhost +
-  quant_offers_2_4 +
-  quant_offers_more_than_4 +
+  quant_offers_2_4_10  +
+  quant_offers_more_than_4_10 +
   mean_cleanliness_rating +
   mean_guest_satisfaction_overall_10 +
   mean_attr_index_norm_10 +
@@ -86,7 +86,7 @@ ggplot(forest_data_weekdays_all[forest_data_weekdays_all$predictor != "(Intercep
                  y = factor(predictor,
                             levels = c("mean_room_shared_10", "mean_room_private_10", "mean_person_capacity",
                                        "mean_bedrooms", "mean_dist", "mean_metro_dist",
-                                       "mean_host_is_superhost", "quant_offers_2_4", "quant_offers_more_than_4",
+                                       "mean_host_is_superhost", "quant_offers_2_4_10", "quant_offers_more_than_4_10",
                                        "mean_cleanliness_rating", "mean_guest_satisfaction_overall_10", "mean_attr_index_norm_10")))) +
   geom_line(aes(x = effects,
                 y = predictor)) +
@@ -97,8 +97,8 @@ ggplot(forest_data_weekdays_all[forest_data_weekdays_all$predictor != "(Intercep
                    labels = c("mean_room_shared_10" = "room shared", "mean_room_private_10" = "room private",
                               "mean_person_capacity" = "person capacity", "mean_bedrooms" = "number of bedrooms",
                               "mean_dist" = "distance from city center", "mean_metro_dist" = "distance from metro",
-                              "mean_host_is_superhost" = "superhost status", "quant_offers_2_4" = "2-4 offers",
-                              "quant_offers_more_than_4" = "more than 4 offers", "mean_cleanliness_rating" = "cleanliness rating",
+                              "mean_host_is_superhost" = "superhost status", "quant_offers_2_4_10" = "2-4 offers",
+                              "quant_offers_more_than_4_10" = "more than 4 offers", "mean_cleanliness_rating" = "cleanliness rating",
                               "mean_guest_satisfaction_overall_10" = "guest satisfication rating", "mean_attr_index_norm_10" = "location attraction index")) +
   theme(plot.title = element_text(size = 12))
 
@@ -113,8 +113,8 @@ formula_weekdays_all_gamma <- mean_realSum ~ 1 +
   mean_dist +
   mean_metro_dist +
   mean_host_is_superhost +
-  quant_offers_2_4 +
-  quant_offers_more_than_4 +
+  quant_offers_2_4_10  +
+  quant_offers_more_than_4_10 +
   mean_cleanliness_rating +
   mean_guest_satisfaction_overall_10 +
   mean_attr_index_norm_10 +
@@ -140,7 +140,7 @@ ggplot(forest_data_weekdays_all_gamma[forest_data_weekdays_all_gamma$predictor !
                  y = factor(predictor,
                             levels = c("mean_room_shared_10", "mean_room_private_10", "mean_person_capacity",
                                        "mean_bedrooms", "mean_dist", "mean_metro_dist",
-                                       "mean_host_is_superhost", "quant_offers_2_4", "quant_offers_more_than_4",
+                                       "mean_host_is_superhost", "quant_offers_2_4_10", "quant_offers_more_than_4_10",
                                        "mean_cleanliness_rating", "mean_guest_satisfaction_overall_10", "mean_attr_index_norm_10")))) +
   geom_line(aes(x = effects,
                 y = predictor)) +
@@ -151,8 +151,8 @@ ggplot(forest_data_weekdays_all_gamma[forest_data_weekdays_all_gamma$predictor !
                    labels = c("mean_room_shared_10" = "room shared", "mean_room_private_10" = "room private",
                               "mean_person_capacity" = "person capacity", "mean_bedrooms" = "number of bedrooms",
                               "mean_dist" = "distance from city center", "mean_metro_dist" = "distance from metro",
-                              "mean_host_is_superhost" = "superhost status", "quant_offers_2_4" = "2-4 offers",
-                              "quant_offers_more_than_4" = "more than 4 offers", "mean_cleanliness_rating" = "cleanliness rating",
+                              "mean_host_is_superhost" = "superhost status", "quant_offers_2_4_10" = "2-4 offers",
+                              "quant_offers_more_than_4_10" = "more than 4 offers", "mean_cleanliness_rating" = "cleanliness rating",
                               "mean_guest_satisfaction_overall_10" = "guest satisfication rating", "mean_attr_index_norm_10" = "location attraction index")) +
   theme(plot.title = element_text(size = 12))
 
@@ -169,8 +169,8 @@ formula_weekdays_all_wo_attr_dist <- mean_log_realSum ~ 1 +
   #mean_dist +
   mean_metro_dist +
   mean_host_is_superhost +
-  quant_offers_2_4 +
-  quant_offers_more_than_4 +
+  quant_offers_2_4_10 +
+  quant_offers_more_than_4_10 +
   mean_cleanliness_rating +
   mean_guest_satisfaction_overall_10 +
   #mean_attr_index_norm_10 +
@@ -200,7 +200,7 @@ ggplot(forest_data_weekdays_all_wo_attr_dist[forest_data_weekdays_all_wo_attr_di
                  y = factor(predictor,
                             levels = c("mean_room_shared_10", "mean_room_private_10", "mean_person_capacity",
                                        "mean_bedrooms", "mean_metro_dist",
-                                       "mean_host_is_superhost", "quant_offers_2_4", "quant_offers_more_than_4",
+                                       "mean_host_is_superhost", "quant_offers_2_4_10", "quant_offers_more_than_4_10",
                                        "mean_cleanliness_rating", "mean_guest_satisfaction_overall_10")))) +
   geom_line(aes(x = effects,
                 y = predictor)) +
@@ -211,7 +211,7 @@ ggplot(forest_data_weekdays_all_wo_attr_dist[forest_data_weekdays_all_wo_attr_di
                    labels = c("mean_room_shared_10" = "room shared", "mean_room_private_10" = "room private",
                               "mean_person_capacity" = "person capacity", "mean_bedrooms" = "number of bedrooms",
                               "mean_metro_dist" = "distance from metro", "mean_host_is_superhost" = "superhost status",
-                              "quant_offers_2_4" = "2-4 offers", "quant_offers_more_than_4" = "more than 4 offers",
+                              "quant_offers_2_4_10" = "2-4 offers", "quant_offers_more_than_4_10" = "more than 4 offers",
                               "mean_cleanliness_rating" = "cleanliness rating", "mean_guest_satisfaction_overall_10" = "guest satisfication rating")) +
   theme(plot.title = element_text(size = 12))
 
