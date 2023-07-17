@@ -40,6 +40,7 @@ london_weekdays_grouped <- joined_data_london_weekdays %>%
             mean_room_private_10 = mean(room_private) * 10,
             mean_person_capacity = mean(person_capacity),
             mean_host_is_superhost = mean(host_is_superhost),
+            mean_host_is_superhost_10 = mean(host_is_superhost) * 10,
             quant_offers_2_4 = sum(offers == "2-4 offers") / n,
             quant_offers_2_4_10 = quant_offers_2_4 * 10,
             quant_offers_more_than_4 = sum(offers == "more than 4 offers") / n,
@@ -64,40 +65,37 @@ london_weekdays_grouped <- joined_data_london_weekdays %>%
 cor(as.data.frame(london_weekdays_grouped)[, c("quant_room_type_entireHomeApt",
                                       "quant_room_type_privateRoom",
                                       "quant_room_type_sharedRoom",
-                                      "mean_room_shared",
-                                      "mean_room_private",
+                                      "mean_room_shared_10",
+                                      "mean_room_private_10",
                                       "mean_person_capacity",
-                                      "mean_host_is_superhost",
-                                      "quant_offers_2_4",
-                                      "quant_offers_more_than_4",
+                                      "mean_host_is_superhost_10",
+                                      "quant_offers_2_4_10",
+                                      "quant_offers_more_than_4_10",
                                       "mean_cleanliness_rating",
-                                      "mean_guest_satisfaction_overall",
                                       "mean_guest_satisfaction_overall_10",
                                       "mean_bedrooms",
                                       "mean_dist",
                                       "mean_metro_dist",
                                       "mean_attr_index",
-                                      "mean_attr_index_norm",
                                       "mean_attr_index_norm_10",
                                       "mean_rest_index",
                                       "mean_rest_index_norm")])
 # highly correlated pairs of variables:
 # -"quant_room_type_entireHomeApt" and "quant_room_type_privateRoom"
-# -"quant_room_type_privateRoom" and "mean_room_private"
-# -"quant_room_type_sharedRoom" and "mean_room_shared"
-# -"mean_guest_satisfaction_overall" and "mean_guest_satisfaction_overall_10"
-# -"mean_attr_index" and "mean_attr_index_norm" and "mean_attr_index_norm_10" 
+# -"quant_room_type_privateRoom" and "mean_room_private_10"
+# -"quant_room_type_sharedRoom" and "mean_room_shared_10"
+# -"mean_attr_index" and "mean_attr_index_norm_10" 
 # -"mean_rest_index" and "mean_rest_index_norm"
 # -"mean_attr_index" and "mean_rest_index"
 # -> exclude "quant_room_type_entireHomeApt", "quant_room_type_privateRoom", "quant_room_type_sharedRoom",
-# "mean_guest_satisfaction_overall", "mean_attr_index_norm", "mean_rest_index_norm", "mean_rest_index" from model
+# "mean_guest_satisfaction_overall", "mean_attr_index", "mean_rest_index_norm", "mean_rest_index" from model
 
-cor(as.data.frame(london_weekdays_grouped)[, c("mean_room_shared",
-                                               "mean_room_private",
+cor(as.data.frame(london_weekdays_grouped)[, c("mean_room_shared_10",
+                                               "mean_room_private_10",
                                                "mean_person_capacity",
-                                               "mean_host_is_superhost",
-                                               "quant_offers_2_4",
-                                               "quant_offers_more_than_4",
+                                               "mean_host_is_superhost_10",
+                                               "quant_offers_2_4_10",
+                                               "quant_offers_more_than_4_10",
                                                "mean_cleanliness_rating",
                                                "mean_guest_satisfaction_overall_10",
                                                "mean_bedrooms",
