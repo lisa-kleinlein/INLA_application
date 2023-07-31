@@ -1,10 +1,5 @@
-library(INLA)
-library(spdep)
 library(sf)
-library(rgdal)
-library(tidyverse)
 library(dplyr)
-library(maptools)
 
 # mode-function
 getmode <- function(v) {
@@ -12,18 +7,15 @@ getmode <- function(v) {
   uniqv[which.max(tabulate(match(v, uniqv)))]
 }
 
-## London
+# London shapefile
 shape_london <- st_read("London-wards-2018/London-wards-2018_ESRI/London_Ward.shp")
 sf_london_weekdays <- st_as_sf(london_weekdays, coords = c("lng", "lat"), crs = 4326)
 
-# Check the CRS of shape_london and sf_london_weekdays
 print(st_crs(shape_london))
 print(st_crs(sf_london_weekdays))
 
-# Align the CRS of districts and sf_london_weekdays
 sf_london_weekdays <- st_transform(sf_london_weekdays, crs = st_crs(shape_london))
 
-# Perform the spatial join
 joined_data_london_weekdays <- st_join(sf_london_weekdays, shape_london)
 
 london_weekdays_grouped <- joined_data_london_weekdays %>%
@@ -62,6 +54,7 @@ london_weekdays_grouped <- joined_data_london_weekdays %>%
             NONLD_AREA = getmode(NONLD_AREA),
             geometry = getmode(geometry))
 
+# correlation of predictors
 cor(as.data.frame(london_weekdays_grouped)[, c("quant_room_type_entireHomeApt",
                                       "quant_room_type_privateRoom",
                                       "quant_room_type_sharedRoom",

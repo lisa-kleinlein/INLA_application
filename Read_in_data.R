@@ -1,5 +1,3 @@
-setwd("C:/Users/lisak/OneDrive/Dokumente/Studium/6. Semester/Bachelor-Seminar/Application")
-
 london_weekdays <- read.csv("archive/london_weekdays.csv")
 london_weekdays$weekend_listing <- 0
 london_weekdays$room_type_entireHomeApt <- as.numeric(london_weekdays$room_type == "Entire home/apt")
